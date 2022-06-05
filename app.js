@@ -41,8 +41,9 @@ app.get('/teste', async (req, res) => {
 
   const data_inicial = params.data_inicial;
   const data_final = params.data_final;
-
-  lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+    lista_dias_selecionados = [];
+    // console.log(app["Time Series (Daily)"])
+   lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
 
 
   res.statusCode = 200;//Códig
@@ -58,11 +59,12 @@ function filtrarPorDiasEscolhidos(datas,dt_inicial, dt_fim) {
     for(data in datas){
 
         if(data >= dt_inicial && data<= dt_fim ){
-            list_valores_selecionados.push(data);
+            list_valores_selecionados.push({"data": data, "valor": datas[data]["4. close"]});
+            //console.log(datas[data]["4. close"]);
         }
         // console.log(data)
     }
-
+    
     return list_valores_selecionados;
 }
 
