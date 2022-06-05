@@ -77,7 +77,18 @@ function redimensionamentoDadosConsultados(dados){
     const numero_colunas = controll;
 
     console.log(`O número de intervalors é: ${numero_intervalo}.\n`);
-    console.log(`O número de colunas é: ${numero_colunas}.`);
+    console.log(`O número de colunas é: ${numero_colunas}. \n\n`);
+
+
+    for(let i = 0; i<dados.length; i+=numero_intervalo){
+        let somatorio;
+        for(let j = i; j < i+numero_intervalo; j++){
+            somatorio = dados[j].valor;
+        }
+
+        let media = somatorio/numero_intervalo;
+        console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+    }   
 
 
 
