@@ -38,10 +38,33 @@ app.get('/teste', async (req, res) => {
   var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${params.ativo}&outputsize=full&apikey=${apikey}`;
   const response = await fetch(url_consulta)
   const app = await response.json()
+
+  const data_inicial = params.data_inicial;
+  const data_final = params.data_final;
+
+  lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+
+
   res.statusCode = 200;//Códig
   res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(app));
+//   res.end(JSON.stringify(app));
+  res.end(JSON.stringify(lista_dias_selecionados));
 })
+
+
+function filtrarPorDiasEscolhidos(datas,dt_inicial, dt_fim) {
+    list_valores_selecionados = []
+
+    for(data in datas){
+
+        if(data >= dt_inicial && data<= dt_fim ){
+            list_valores_selecionados.push(data);
+        }
+        // console.log(data)
+    }
+
+    return list_valores_selecionados;
+}
 
 
 
