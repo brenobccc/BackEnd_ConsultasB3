@@ -35,7 +35,7 @@ app.get('/teste', async (req, res) => {
   apikey = "65Y4AT7GA8UR20L7"
   //Requisição e consumo da API de cotação
   //var url_consulta = 'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7';
-  var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=${params.ativo}&outputsize=full&apikey=${apikey}`;
+  var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${params.ativo}&outputsize=full&apikey=${apikey}`;
   const response = await fetch(url_consulta)
   const app = await response.json()
   res.statusCode = 200;//Códig
