@@ -45,6 +45,11 @@ app.get('/teste', async (req, res) => {
     // console.log(app["Time Series (Daily)"])
    lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
 
+   if(verificarNumeroPrimo(lista_dias_selecionados.length)){
+        console.log("permissão não concedida")
+   }else{
+        console.log("permissão concedida")
+   }
 
   res.statusCode = 200;//Códig
   res.setHeader('Content-Type', 'application/json');
@@ -67,6 +72,28 @@ function filtrarPorDiasEscolhidos(datas,dt_inicial, dt_fim) {
     
     return list_valores_selecionados;
 }
+
+function verificaoNumeroDivisivel(n,i){
+    return n%i == 0 ? true : false 
+}
+
+function verificarNumeroPrimo(num){
+    let qtde = 0;
+
+    for(let i = 1; i<=num; i++){
+        qtde = verificaoNumeroDivisivel(num, i) ? qtde + 1 : qtde;
+    }
+
+    if(qtde==2){
+        console.log(`O valor ${num} é primo`);
+        return true;
+    }else{
+        console.log(`O valor ${num} não é primo`);
+        return false;
+    }
+    
+}
+
 
 
 
