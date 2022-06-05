@@ -48,6 +48,9 @@ app.get('/teste', async (req, res) => {
    if(verificarNumeroPrimo(lista_dias_selecionados.length)){
         console.log("permissão não concedida")
    }else{
+
+        response_object = redimensionamentoDadosConsultados(lista_dias_selecionados);
+
         console.log("permissão concedida")
    }
 
@@ -57,6 +60,30 @@ app.get('/teste', async (req, res) => {
   res.end(JSON.stringify(lista_dias_selecionados));
 })
 
+
+function redimensionamentoDadosConsultados(dados){
+    const valores_divisores = [9,8,7,6,5,4,3,2];
+    let controll; 
+
+    //Verifica qual o número q ele é divisivel
+    for(let i = 0; i<valores_divisores.length; i++){
+        if(verificaoNumeroDivisivel(dados.length, valores_divisores[i])){
+            controll = valores_divisores[i]
+            i = valores_divisores.length
+        }
+    }
+
+    const numero_intervalo = dados.length/controll;
+    const numero_colunas = controll;
+
+    console.log(`O número de intervalors é: ${numero_intervalo}.\n`);
+    console.log(`O número de colunas é: ${numero_colunas}.`);
+
+
+
+
+
+}
 
 function filtrarPorDiasEscolhidos(datas,dt_inicial, dt_fim) {
     list_valores_selecionados = []
