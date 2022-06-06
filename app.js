@@ -46,6 +46,9 @@ app.get('/teste', async (req, res) => {
    lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
 
    if(verificarNumeroPrimo(lista_dias_selecionados.length)){
+        response_object = redimensionamentoDadosConsultadosPrimos(lista_dias_selecionados);
+
+
         console.log("permissão não concedida")
    }else{
 
@@ -60,6 +63,70 @@ app.get('/teste', async (req, res) => {
   res.end(JSON.stringify(lista_dias_selecionados));
 })
 
+function redimensionamentoDadosConsultadosPrimos(dados){
+    const valores_divisores = [9,8,7,6,5,4,3,2];
+    v = dados.length;
+
+    for(let i = 0; i<valores_divisores.length; i++){
+        if(verificaoNumeroDivisivel(dados.length-1, valores_divisores[i])){
+            controll = valores_divisores[i]
+            i = valores_divisores.length
+        }
+    }
+
+
+    const numero_intervalo = (dados.length-1)/controll;
+    
+
+   console.log("numero intervalo é: "+numero_intervalo);
+
+    /*
+    for(let i = 0; i<dados.length; i+=numero_intervalo){
+        let somatorio;
+        for(let j = i; j < i+numero_intervalo; j++){
+            somatorio = dados[j].valor;
+        }
+
+        let media = somatorio/numero_intervalo;
+        console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+    }   */
+    console.log(dados.length);
+
+    for(let i = 0; i<dados.length-1; i+=numero_intervalo){
+        // let somatorio;
+        // for(let j = i; j < i+numero_intervalo; j++){
+        //     console.log("entrou")
+        //     somatorio = dados[j].valor;
+        // }
+
+        // let media = somatorio/numero_intervalo;
+        // console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+        let somatorio = 0.00;
+        console.log("laço principal")
+        for(let j = i; j<=i+numero_intervalo; j++){
+            //console.log(j)
+            somatorio = parseFloat(somatorio) + parseFloat(dados[j].valor);
+            //console.log(dados[j].valor);
+        }
+
+        let media = parseFloat(somatorio)/parseInt(numero_intervalo)
+        console.log("Media:"+media)
+        //let media = somatorio/numero_intervalo;
+       // console.log("Somatorio:"+somatorio+"\n")
+        
+       // console.log("Numero Intervalo:"+numero_intervalo+"\n")
+
+
+
+        //console.log(i+"\n")
+    }
+
+    //const numero_colunas = controll;
+
+   // console.log(`O número de intervalors é: ${numero_intervalo}.\n`);
+    //console.log(`O número de colunas é: ${numero_colunas}. \n\n`);
+
+}
 
 function redimensionamentoDadosConsultados(dados){
     const valores_divisores = [9,8,7,6,5,4,3,2];
@@ -81,12 +148,15 @@ function redimensionamentoDadosConsultados(dados){
 
 
     for(let i = 0; i<dados.length; i+=numero_intervalo){
-        let somatorio;
+        let somatorio = 0.00; 
         for(let j = i; j < i+numero_intervalo; j++){
-            somatorio = dados[j].valor;
-        }
+            somatorio = parseFloat(somatorio) + parseFloat(dados[j].valor);
 
-        let media = somatorio/numero_intervalo;
+            //console.log(dados[j].valor+"\n")
+        }
+        // console.log(somatorio)
+        let media = parseFloat(somatorio)/parseInt(numero_intervalo);
+        // console.log(media)
         console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
     }   
 
