@@ -132,6 +132,42 @@ function redimensionamentoDadosConsultadosPrimos(dados) {
 
 }
 
+function redimensionamentoDadosConsultados2(dados) {
+    const valores_divisores = [9, 8, 7, 6, 5, 4, 3, 2];
+    let controll;
+
+    //Verifica qual o número q ele é divisivel
+    for (let i = 0; i < valores_divisores.length; i++) {
+        if (verificaoNumeroDivisivel(dados, valores_divisores[i])) {
+            controll = valores_divisores[i]
+            i = valores_divisores.length
+        }
+    }
+
+    if (controll === 2) {
+        return dados/controll;
+    }else{
+        return 0;
+    }
+
+}
+
+function verificaoNumeroDivisivel(n, i) {
+    return n % i == 0 ? true : false
+}
+
+function listaValoresGerais(dados_size){
+    list = []
+
+    for(let i = 2; i<=dados_size;i++){
+        if(verificaoNumeroDivisivel(dados_size,i)){
+            list.push(i);
+        }
+    }
+
+    return list;
+}
+
 function redimensionamentoDadosConsultados(dados) {
     const valores_divisores = [9, 8, 7, 6, 5, 4, 3, 2];
     let controll;
@@ -144,37 +180,126 @@ function redimensionamentoDadosConsultados(dados) {
         }
     }
 
-    const numero_intervalo = dados.length / controll;
-    const numero_colunas = controll;
+    let numero_intervalo = dados.length / controll;
+    let numero_colunas = controll;
 
     console.log(`O número de intervalors é: ${numero_intervalo}.\n`);
     console.log(`O número de colunas é: ${numero_colunas}. \n\n`);
 
-    list_objetos = []
+    if (numero_colunas == 2) {
+        list = listaValoresGerais(dados.length);
+        console.log(list);
 
-    for (let i = 0; i < dados.length; i += numero_intervalo) {
-        let somatorio = 0.00;
-        for (let j = i; j < i + numero_intervalo; j++) {
-            somatorio = parseFloat(somatorio) + parseFloat(dados[j].valor);
+        controll = list[1]
+        numero_colunas = controll;
+        numero_intervalo = dados.length / controll; 
 
-            //console.log(dados[j].valor+"\n")
-        }
-        // console.log(somatorio)
-        let media = parseFloat(somatorio) / parseInt(numero_intervalo);
-        // console.log(media)
-        list_objetos.push(
-            {
-                "dia": dados[i].data,
-                "valor_media": parseFloat(media.toFixed(2))
+        list_objetos = []
+
+        for (let i = 0; i < dados.length; i += numero_intervalo) {
+            let somatorio = 0.00;
+            for (let j = i; j < i + numero_intervalo; j++) {
+                somatorio = parseFloat(somatorio) + parseFloat(dados[j].valor);
+
+                //console.log(dados[j].valor+"\n")
             }
-        )
-        console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+            // console.log(somatorio)
+            let media = parseFloat(somatorio) / parseInt(numero_intervalo);
+            // console.log(media)
+            list_objetos.push(
+                {
+                    "dia": dados[i].data,
+                    "valor_media": parseFloat(media.toFixed(2))
+                }
+            )
+            console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+        }
+
+
+        console.log(list_objetos);
+
+
+
+      //  var qt = 0;    
+        
+        //for( let i = 1 ; i<=1500 ; i++ ){ 
+//            qt = parseInt(redimensionamentoDadosConsultados2(dados.length));
+       // } 
+       // console.log("Quantidade:"+qt); 
+    
+        /*function verificaoNumeroDivisivel(n, i) {
+            return n % i == 0 ? true : false
+        }
+        
+        function verificarNumeroPrimo(num) {
+            let qtde = 0;
+        
+            for (let i = 1; i <= num; i++) { 
+                if(verificaoNumeroDivisivel(num, i)==true){qtde = qtde + 1; console.log(i);};
+            }
+        
+            if (qtde == 2) {
+                console.log(`O valor ${num} é primo`);
+                return true;
+            } else {
+                console.log(`O valor ${num} não é primo`);
+                return false;
+            }
+        
+        } */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } else {
+        list_objetos = []
+
+        for (let i = 0; i < dados.length; i += numero_intervalo) {
+            let somatorio = 0.00;
+            for (let j = i; j < i + numero_intervalo; j++) {
+                somatorio = parseFloat(somatorio) + parseFloat(dados[j].valor);
+
+                //console.log(dados[j].valor+"\n")
+            }
+            // console.log(somatorio)
+            let media = parseFloat(somatorio) / parseInt(numero_intervalo);
+            // console.log(media)
+            list_objetos.push(
+                {
+                    "dia": dados[i].data,
+                    "valor_media": parseFloat(media.toFixed(2))
+                }
+            )
+            console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+        }
+
+
+        console.log(list_objetos);
+
     }
-
-
-    console.log(list_objetos);
-
-
 
 
 }
