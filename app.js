@@ -7,10 +7,19 @@ const express = require('express');
 const res = require('express/lib/response');
 const app = express();
 const url = require('url');
+const cors = require('cors');
 const fetch = require('node-fetch-commonjs');
 
 
 var request = require('request');
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE');
+    res.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE');
+    app.use(cors());
+    next();
+});
 
 
 app.get('/', async (req, res) => {
@@ -34,39 +43,84 @@ app.get('/teste', async (req, res) => {
 
     apikey = "65Y4AT7GA8UR20L7"
     //Requisição e consumo da API de cotação
-    //var url_consulta = 'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7';
-    var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${params.ativo}&outputsize=full&apikey=${apikey}`;
-    const response = await fetch(url_consulta)
-    const app = await response.json()
 
     const data_inicial = params.data_inicial;
     const data_final = params.data_final;
-    lista_dias_selecionados = [];
-    // console.log(app["Time Series (Daily)"])
-    lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
 
-    if (verificarNumeroPrimo(lista_dias_selecionados.length)) {
-        response_object = redimensionamentoDadosConsultadosPrimos(lista_dias_selecionados);
+    list = params.ativo.split(';');
+    console.log(list)
 
+    lista_objeto_response = []
+    console.log(list.length)
+    if (list.length>1) {
+        //Fazer lista de ativos
+        for (let i = 0; i < list.length; i++) {
+            var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[i]}&outputsize=full&apikey=${apikey}`;
+            //console.log("valor:"+list[i])
+            const response = await fetch(url_consulta)
+            let app =  {}
+            app = await response.json()
+           
+            lista_dias_selecionados = {};
+            // console.log(app["Time Series (Daily)"])
+            lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+            console.log("lista:"+JSON.stringify(lista_dias_selecionados))
+            lista_objeto_response.push({ativo:list[i] , valores: lista_dias_selecionados});//Lista de objetos.
+        }
+        //Pegar ativos com maior qtde de datas 
+        console.log(lista_objeto_response);
 
-        console.log("permissão não concedida")
+        res.statusCode = 200;//Códig
+        res.setHeader('Content-Type', 'application/json');
+        //   res.end(JSON.stringify(app));
+        res.end(JSON.stringify(lista_objeto_response));
+        //separar lista de dias 
+
+        //gerar lista de dadtas e lista de ativos com os resultados de cada um
+
     } else {
+        //var url_consulta = 'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7';
+        var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[0]}&outputsize=full&apikey=${apikey}`;
+        console.log(url_consulta);
+        const response = await fetch(url_consulta)
+        const app = await response.json()
 
-        response_object = redimensionamentoDadosConsultados(lista_dias_selecionados);
+        lista_dias_selecionados = {};
+        // console.log(app["Time Series (Daily)"])
+        lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+        //console.log(lista_dias_selecionados)
+        console.log("Tamanho:"+lista_dias_selecionados.length)
+        res.statusCode = 200;//Códig
+        res.setHeader('Content-Type', 'application/json');
+        //   res.end(JSON.stringify(app));
+        res.end(JSON.stringify(lista_dias_selecionados));
 
-        console.log("permissão concedida")
+        // // console.log(Array.from(list.split(';')));
+        // res.statusCode = 200;//Códig
+        // res.setHeader('Content-Type', 'application/json');
+        // //   res.end(JSON.stringify(app));
+        // res.end(JSON.stringify(list));
+
     }
 
-    res.statusCode = 200;//Códig
-    res.setHeader('Content-Type', 'application/json');
-    //   res.end(JSON.stringify(app));
-    res.end(JSON.stringify(lista_dias_selecionados));
+
 })
 
-function redimensionamentoDadosConsultadosPrimos(dados) {
+function filtrarPorDiasEscolhidos(datas, dt_inicial, dt_fim) {
+    list_valores_selecionados = {}
+
+    for (data in datas) {
+        if (data >= dt_inicial && data <= dt_fim) {
+            list_valores_selecionados[data] = datas[data]["4. close"];
+            //console.log("o coisa:"+datas[data]["4. close"]);
+        }
+    }
+    return list_valores_selecionados;
+}
+/*function redimensionamentoDadosConsultadosPrimos(dados) {
     const valores_divisores = [9, 8, 7, 6, 5, 4, 3, 2];
     v = dados.length;
-
+    
     for (let i = 0; i < valores_divisores.length; i++) {
         if (verificaoNumeroDivisivel(dados.length - 1, valores_divisores[i])) {
             controll = valores_divisores[i]
@@ -80,16 +134,16 @@ function redimensionamentoDadosConsultadosPrimos(dados) {
 
     console.log("numero intervalo é: " + numero_intervalo);
 
-    /*
-    for(let i = 0; i<dados.length; i+=numero_intervalo){
-        let somatorio;
-        for(let j = i; j < i+numero_intervalo; j++){
-            somatorio = dados[j].valor;
-        }
+    
+    // for(let i = 0; i<dados.length; i+=numero_intervalo){
+    //     let somatorio;
+    //     for(let j = i; j < i+numero_intervalo; j++){
+    //         somatorio = dados[j].valor;
+    //     }
 
-        let media = somatorio/numero_intervalo;
-        console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
-    }   */
+    //     let media = somatorio/numero_intervalo;
+    //     console.log(`media ${i} da data ${dados[i].data} é :  ${media}. \n`);
+    // }   
     console.log(dados.length);
 
 
@@ -227,26 +281,26 @@ function redimensionamentoDadosConsultados(dados) {
        // } 
        // console.log("Quantidade:"+qt); 
     
-        /*function verificaoNumeroDivisivel(n, i) {
-            return n % i == 0 ? true : false
-        }
+        // /*function verificaoNumeroDivisivel(n, i) {
+        //     return n % i == 0 ? true : false
+        // }
         
-        function verificarNumeroPrimo(num) {
-            let qtde = 0;
+        // function verificarNumeroPrimo(num) {
+        //     let qtde = 0;
         
-            for (let i = 1; i <= num; i++) { 
-                if(verificaoNumeroDivisivel(num, i)==true){qtde = qtde + 1; console.log(i);};
-            }
+        //     for (let i = 1; i <= num; i++) { 
+        //         if(verificaoNumeroDivisivel(num, i)==true){qtde = qtde + 1; console.log(i);};
+        //     }
         
-            if (qtde == 2) {
-                console.log(`O valor ${num} é primo`);
-                return true;
-            } else {
-                console.log(`O valor ${num} não é primo`);
-                return false;
-            }
+        //     if (qtde == 2) {
+        //         console.log(`O valor ${num} é primo`);
+        //         return true;
+        //     } else {
+        //         console.log(`O valor ${num} não é primo`);
+        //         return false;
+        //     }
         
-        } */
+        // } 
 
 
 
@@ -302,24 +356,10 @@ function redimensionamentoDadosConsultados(dados) {
     }
 
 
-}
+}*/
 
-function filtrarPorDiasEscolhidos(datas, dt_inicial, dt_fim) {
-    list_valores_selecionados = []
 
-    for (data in datas) {
-
-        if (data >= dt_inicial && data <= dt_fim) {
-            list_valores_selecionados.push({ "data": data, "valor": datas[data]["4. close"] });
-            //console.log(datas[data]["4. close"]);
-        }
-        // console.log(data)
-    }
-
-    return list_valores_selecionados;
-}
-
-function verificaoNumeroDivisivel(n, i) {
+/*function verificaoNumeroDivisivel(n, i) {
     return n % i == 0 ? true : false
 }
 
@@ -343,11 +383,11 @@ function verificarNumeroPrimo(num) {
 
 
 
+*/
+
 var server = app.listen(3000, function () {
     var host = "127.0.0.1";
-    var port = "3000";
+    var port = "8080";
 
     console.log("App listening at http://%s:%s", host, port)
 })
-
-
