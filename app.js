@@ -51,29 +51,49 @@ app.get('/teste', async (req, res) => {
     console.log(list)
 
     lista_objeto_response = []
+
+    let dataMaior = 0;
+    let listDatasGenericas = []
     console.log(list.length)
-    if (list.length>1) {
+    if (list.length > 1) {
         //Fazer lista de ativos
         for (let i = 0; i < list.length; i++) {
             var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[i]}&outputsize=full&apikey=${apikey}`;
             //console.log("valor:"+list[i])
             const response = await fetch(url_consulta)
-            let app =  {}
-            app = await response.json()
-           
-            lista_dias_selecionados = {};
+            let app = {}
+            app = await response.json();
+
+            lista_dias_selecionados = [];
+            datas_selecionadas = [];
             // console.log(app["Time Series (Daily)"])
-            lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
-            console.log("lista:"+JSON.stringify(lista_dias_selecionados))
-            lista_objeto_response.push({ativo:list[i] , valores: lista_dias_selecionados});//Lista de objetos.
+            posFiltroObj = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+            lista_dias_selecionados = posFiltroObj.valores;
+            datas_selecionadas = posFiltroObj.datas;
+
+            /*Verificação das datas*/
+            if(dataMaior<datas_selecionadas.length){
+                dataMaior = datas_selecionadas.length;
+                listDatasGenericas = datas_selecionadas;
+            }
+            
+
+            //console.log("Quantidade de datas para o ativo " + list[i] + " :" + lista_dias_selecionados.length);
+  //          lista_objeto_response.push({ ativo: list[i], datas: datas_selecionadas, valores: lista_dias_selecionados });//Lista de objetos.
+            lista_objeto_response.push({ ativo: list[i], valores: lista_dias_selecionados });//Lista de objetos.
+  
         }
+
+        console.log(`A qtde de datas entre o intervalo de  ${data_inicial} até ${data_final} é: ${dataMaior}`);
+
+
         //Pegar ativos com maior qtde de datas 
-        console.log(lista_objeto_response);
+        // console.log(lista_objeto_response);
 
         res.statusCode = 200;//Códig
         res.setHeader('Content-Type', 'application/json');
         //   res.end(JSON.stringify(app));
-        res.end(JSON.stringify(lista_objeto_response));
+        res.end(JSON.stringify({list_datas_genericas: listDatasGenericas, lista_ativosb3: lista_objeto_response}));
         //separar lista de dias 
 
         //gerar lista de dadtas e lista de ativos com os resultados de cada um
@@ -89,7 +109,7 @@ app.get('/teste', async (req, res) => {
         // console.log(app["Time Series (Daily)"])
         lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
         //console.log(lista_dias_selecionados)
-        console.log("Tamanho:"+lista_dias_selecionados.length)
+        console.log("Tamanho:" + lista_dias_selecionados.length)
         res.statusCode = 200;//Códig
         res.setHeader('Content-Type', 'application/json');
         //   res.end(JSON.stringify(app));
@@ -107,15 +127,19 @@ app.get('/teste', async (req, res) => {
 })
 
 function filtrarPorDiasEscolhidos(datas, dt_inicial, dt_fim) {
-    list_valores_selecionados = {}
+    list_valores_selecionados = [], list_datas_selecionadas = [];
 
     for (data in datas) {
         if (data >= dt_inicial && data <= dt_fim) {
-            list_valores_selecionados[data] = datas[data]["4. close"];
+            list_valores_selecionados.push(datas[data]["4. close"]);
+            list_datas_selecionadas.push(data);
             //console.log("o coisa:"+datas[data]["4. close"]);
         }
     }
-    return list_valores_selecionados;
+
+    filtroResult = { "valores": list_valores_selecionados, "datas": list_datas_selecionadas }
+
+    return filtroResult;
 }
 /*function redimensionamentoDadosConsultadosPrimos(dados) {
     const valores_divisores = [9, 8, 7, 6, 5, 4, 3, 2];
