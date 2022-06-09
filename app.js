@@ -90,6 +90,35 @@ app.get('/teste', async (req, res) => {
         //Pegar ativos com maior qtde de datas 
         // console.log(lista_objeto_response);
 
+
+        //separar lista de dias 
+
+        //gerar lista de dadtas e lista de ativos com os resultados de cada um
+
+    } else if(list.length == 1){
+            var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[0]}&outputsize=full&apikey=${apikey}`;
+
+            const response = await fetch(url_consulta)
+            let app = {}
+            app = await response.json()
+
+            lista_dias_selecionados = [];
+            datas_selecionadas = [];
+            posFiltroObj = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+            lista_dias_selecionados = posFiltroObj.valores;
+            listDatasGenericas = posFiltroObj.datas;
+            //Lista de objetos.//{ ativo: list[i], valores: lista_dias_selecionados }
+
+            lista_objeto_response.push({ ativo: list[0], valores: lista_dias_selecionados });
+           // res.end(JSON.stringify({list_datas_genericas: listDatasGenericas, lista_ativosb3: list[0]}));//Lista de objetos.
+    }
+
+        console.log(`A qtde de datas entre o intervalo de  ${data_inicial} até ${data_final} é: ${dataMaior}`);
+
+
+        //Pegar ativos com maior qtde de datas 
+        // console.log(lista_objeto_response);
+
         res.statusCode = 200;//Códig
         res.setHeader('Content-Type', 'application/json');
         //   res.end(JSON.stringify(app));
@@ -98,33 +127,11 @@ app.get('/teste', async (req, res) => {
 
         //gerar lista de dadtas e lista de ativos com os resultados de cada um
 
-    } else {
-        //var url_consulta = 'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7';
-        var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[0]}&outputsize=full&apikey=${apikey}`;
-        console.log(url_consulta);
-        const response = await fetch(url_consulta)
-        const app = await response.json()
-
-        lista_dias_selecionados = {};
-        // console.log(app["Time Series (Daily)"])
-        lista_dias_selecionados = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
-        //console.log(lista_dias_selecionados)
-        console.log("Tamanho:" + lista_dias_selecionados.length)
-        res.statusCode = 200;//Códig
-        res.setHeader('Content-Type', 'application/json');
-        //   res.end(JSON.stringify(app));
-        res.end(JSON.stringify(lista_dias_selecionados));
-
-        // // console.log(Array.from(list.split(';')));
-        // res.statusCode = 200;//Códig
-        // res.setHeader('Content-Type', 'application/json');
-        // //   res.end(JSON.stringify(app));
-        // res.end(JSON.stringify(list));
 
     }
 
 
-})
+)
 
 function filtrarPorDiasEscolhidos(datas, dt_inicial, dt_fim) {
     list_valores_selecionados = [], list_datas_selecionadas = [];
