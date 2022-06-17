@@ -6,12 +6,23 @@ const fs = require('fs');
 const express = require('express');
 const res = require('express/lib/response');
 const app = express();
+var session = require("express-session");
 const url = require('url');
 const cors = require('cors');
 const fetch = require('node-fetch-commonjs');
 
-
 var request = require('request');
+
+
+app.use(
+    session({
+        secret: "a secret string",
+        resave: true,
+        saveUninitialized: false,
+        cookie: {  },
+    })
+);
+
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -23,19 +34,25 @@ app.use((req, res, next) => {
 
 
 app.get('/', async (req, res) => {
-
     // const response = await fetch('https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7')
     // const app = await response.json()
     // console.log(app)
 
-
+    // console.log("Sessão 0: " + req.session.list[0].ativo + "\n\n\n");
+    // console.log("Sessão 1: " + req.session.list[1].ativo + "\n\n\n");
+    // console.log("Sessão 2: " + req.session.list[2].ativo + "\n\n\n");
+    // console.log("Sessão 3: " + req.session.list[3].ativo + "\n\n\n");
+    req.session.cont += 1;
+    console.log("incrementando:"+req.session.cont);
     res.statusCode = 200;//Códig
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(app));
+    res.end(JSON.stringify(req.session));
 })
 
 
+
 app.get('/teste', async (req, res) => {
+    req.session.cont += '1';
     //Formatação
     const urlParse = url.parse(req.url, true);
     const params = queryString.parse(urlParse.search);
@@ -54,15 +71,99 @@ app.get('/teste', async (req, res) => {
 
     let dataMaior = 0;
     let listDatasGenericas = []
+
+    // if(req.session.cont === undefined) {
+    //     console.log("tá coisado");
+    //     req.session.cont = 0;
+    // }
+   
+    //req.session.cont += ;
     console.log(list.length)
     if (list.length > 1) {
         //Fazer lista de ativos
+        
+        //req.session.list = []
+        // req.session.cont += 1;
+        /*
+        {
+            ativo: "nome",
+            valores: [
+
+            ]
+        }
+        */
+
+        console.log("Sessão:"+req.session);
+
         for (let i = 0; i < list.length; i++) {
-            var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[i]}&outputsize=full&apikey=${apikey}`;
-            //console.log("valor:"+list[i])
-            const response = await fetch(url_consulta)
-            let app = {}
-            app = await response.json();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //Verificar se o valor já tem 
+            console.log(req.session)
+            // if (req.session.list.length != 0) {
+
+            // } else {
+                var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[i]}&outputsize=full&apikey=${apikey}`;
+                //console.log("valor:"+list[i])
+                const response = await fetch(url_consulta)
+                let app = {}
+                app = await response.json();
+
+                // req.session.list.push({
+                //     nome_ativo: list[i],
+                //     dados_ativo: app["Time Series (Daily)"]
+                // })
+                // console.log("salvando....\n");
+                // console.log("O nome salvo foi: "+req.session.list[0].nome_ativo);
+
+            //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             lista_dias_selecionados = [];
             datas_selecionadas = [];
@@ -72,16 +173,16 @@ app.get('/teste', async (req, res) => {
             datas_selecionadas = posFiltroObj.datas;
 
             /*Verificação das datas*/
-            if(dataMaior<datas_selecionadas.length){
+            if (dataMaior < datas_selecionadas.length) {
                 dataMaior = datas_selecionadas.length;
                 listDatasGenericas = datas_selecionadas;
             }
-            
+
 
             //console.log("Quantidade de datas para o ativo " + list[i] + " :" + lista_dias_selecionados.length);
-  //          lista_objeto_response.push({ ativo: list[i], datas: datas_selecionadas, valores: lista_dias_selecionados });//Lista de objetos.
+            //          lista_objeto_response.push({ ativo: list[i], datas: datas_selecionadas, valores: lista_dias_selecionados });//Lista de objetos.
             lista_objeto_response.push({ ativo: list[i], valores: lista_dias_selecionados });//Lista de objetos.
-  
+
         }
 
         console.log(`A qtde de datas entre o intervalo de  ${data_inicial} até ${data_final} é: ${dataMaior}`);
@@ -95,40 +196,40 @@ app.get('/teste', async (req, res) => {
 
         //gerar lista de dadtas e lista de ativos com os resultados de cada um
 
-    } else if(list.length == 1){
-            var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[0]}&outputsize=full&apikey=${apikey}`;
+    } else if (list.length == 1) {
+        var url_consulta = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${list[0]}&outputsize=full&apikey=${apikey}`;
 
-            const response = await fetch(url_consulta)
-            let app = {}
-            app = await response.json()
+        const response = await fetch(url_consulta)
+        let app = {}
+        app = await response.json()
 
-            lista_dias_selecionados = [];
-            datas_selecionadas = [];
-            posFiltroObj = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
-            lista_dias_selecionados = posFiltroObj.valores;
-            listDatasGenericas = posFiltroObj.datas;
-            //Lista de objetos.//{ ativo: list[i], valores: lista_dias_selecionados }
+        lista_dias_selecionados = [];
+        datas_selecionadas = [];
+        posFiltroObj = filtrarPorDiasEscolhidos(app["Time Series (Daily)"], data_inicial, data_final);
+        lista_dias_selecionados = posFiltroObj.valores;
+        listDatasGenericas = posFiltroObj.datas;
+        //Lista de objetos.//{ ativo: list[i], valores: lista_dias_selecionados }
 
-            lista_objeto_response.push({ ativo: list[0], valores: lista_dias_selecionados });
-           // res.end(JSON.stringify({list_datas_genericas: listDatasGenericas, lista_ativosb3: list[0]}));//Lista de objetos.
+        lista_objeto_response.push({ ativo: list[0], valores: lista_dias_selecionados });
+        // res.end(JSON.stringify({list_datas_genericas: listDatasGenericas, lista_ativosb3: list[0]}));//Lista de objetos.
     }
 
-        console.log(`A qtde de datas entre o intervalo de  ${data_inicial} até ${data_final} é: ${dataMaior}`);
+    console.log(`A qtde de datas entre o intervalo de  ${data_inicial} até ${data_final} é: ${dataMaior}`);
 
 
-        //Pegar ativos com maior qtde de datas 
-        // console.log(lista_objeto_response);
+    //Pegar ativos com maior qtde de datas 
+    // console.log(lista_objeto_response);
 
-        res.statusCode = 200;//Códig
-        res.setHeader('Content-Type', 'application/json');
-        //   res.end(JSON.stringify(app));
-        res.end(JSON.stringify({list_datas_genericas: listDatasGenericas, lista_ativosb3: lista_objeto_response}));
-        //separar lista de dias 
+    res.statusCode = 200;//Códig
+    res.setHeader('Content-Type', 'application/json');
+    //   res.end(JSON.stringify(app));
+    res.end(JSON.stringify({ list_datas_genericas: listDatasGenericas, lista_ativosb3: lista_objeto_response }));
+    //separar lista de dias 
 
-        //gerar lista de dadtas e lista de ativos com os resultados de cada um
+    //gerar lista de dadtas e lista de ativos com os resultados de cada um
 
 
-    }
+}
 
 
 )
