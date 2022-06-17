@@ -10,9 +10,8 @@ var session = require("express-session");
 const url = require('url');
 const cors = require('cors');
 const fetch = require('node-fetch-commonjs');
-
 var request = require('request');
-
+const ativos = require('./modules/data/ativos.js');
 
 app.use(
     session({
@@ -32,6 +31,44 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/lista_ativos', async (req,res) => {
+    
+    let list_ativos = [];
+
+    for(let i = 0; i < ativos.length; i++) {
+         nomesAntFormat = (Array.from(ativos[i]).reverse().join('')).split('(')
+
+        //  console.log(nomesAntFormat)
+        nomesAntFormat[0] = Array.from(nomesAntFormat[0]).reverse();
+        
+
+        // console.log(nomesAntForm[0]);
+        nomesAntFormat[0].pop()
+        nomesAntFormat[0] = nomesAntFormat[0].join('');
+
+
+        nomesAntFormat[1] =  Array.from(nomesAntFormat[1]).reverse().join('');
+        // nomesAntFormat[1] =
+        let t = (nomesAntFormat[1].split('Cotação da'))[1];
+        console.log('(' + nomesAntFormat[0] + ')' + t);
+
+        nomesAntFormat[1] = '(' + nomesAntFormat[0] + ')' + t
+
+        //  console.log(nomesAntFormat[0])
+
+
+
+
+         list_ativos.push({ value: nomesAntFormat[0] , label: nomesAntFormat[1]})
+
+         
+    }
+
+    // console.log(list_ativos)
+    res.statusCode = 200;//Códig
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(list_ativos));
+})
 
 app.get('/', async (req, res) => {
     // const response = await fetch('https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=PETR4.SAO&outputsize=full&apikey=65Y4AT7GA8UR20L7')
@@ -58,7 +95,9 @@ app.get('/teste', async (req, res) => {
     const params = queryString.parse(urlParse.search);
     console.log(params);
 
-    apikey = "65Y4AT7GA8UR20L7"
+    // apikey = "65Y4AT7GA8UR20L7"
+    //novo code
+    apikey = "GAGMIJ0YDG8LA7HM"
     //Requisição e consumo da API de cotação
 
     const data_inicial = params.data_inicial;
@@ -245,7 +284,7 @@ function filtrarPorDiasEscolhidos(datas, dt_inicial, dt_fim) {
         }
     }
 
-    filtroResult = { "valores": list_valores_selecionados, "datas": list_datas_selecionadas }
+    filtroResult = { "valores": list_valores_selecionados, "datas": list_datas_selecionadas.reverse() }
 
     return filtroResult;
 }
