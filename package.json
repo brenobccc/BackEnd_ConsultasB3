@@ -1,0 +1,26 @@
+{
+  "name": "backendconsultasb3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brenobccc/BackEnd_ConsultasB3.git"
+  },
+  "keywords": [
+    "bolsa",
+    "de",
+    "valores",
+    "ativos",
+    "b3"
+  ],
+  "author": "Breno",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brenobccc/BackEnd_ConsultasB3/issues"
+  },
+  "homepage": "https://github.com/brenobccc/BackEnd_ConsultasB3#readme"
+}
