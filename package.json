@@ -22,5 +22,17 @@
   "bugs": {
     "url": "https://github.com/brenobccc/BackEnd_ConsultasB3/issues"
   },
-  "homepage": "https://github.com/brenobccc/BackEnd_ConsultasB3#readme"
+  "homepage": "https://github.com/brenobccc/BackEnd_ConsultasB3#readme",
+  "dependencies": {
+    "consign": "^0.1.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "node-fetch-commonjs": "^3.1.1",
+    "query-string": "^7.1.1",
+    "request": "^2.88.2",
+    "url": "^0.11.0"
+  }
 }
