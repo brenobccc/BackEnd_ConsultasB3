@@ -1,7 +1,7 @@
 module.exports = [
    "Cotação da Petroleo Brasileiro S.A. Petrobras (PETR3.SAO)",
    "Cotação da Petroleo Brasileiro S.A. Petrobras (PETR4.SAO)",
-   "Cotação da Vale SA (VALE3)",
+   "Cotação da Vale SA (VALE3.SAO)",
    "Cotação da Banco BTG Pactual S.A. (BPAC5.SAO)",
    "Cotação da Banco BTG Pactual S.A. (BPAC3.SAO)",
    "Cotação da Itau Unibanco Holding SA (ITUB3.SAO)",
